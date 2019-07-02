@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.PaperDao">
+    <resultMap type="Paper" id="paperResultMap" >
+        <id property="paperId" column="paper_id"/>
+        <result property="paperName" column="paper_name"/>
+        <result property="paperNum" column="paper_num"/>
+        <result property="paperDetail" column="paper_detail"/>
+    </resultMap>
+    <insert id="addPaper" parameterType="Paper">
+        INSERT INTO paper(paper_id,paper_name,paper_num,paper_detail) VALUE (#{paperId},#{paperName}, #{paperNum}, #{paperDetail})
+    </insert>
+
+    <delete id="deletePaperById" parameterType="long">
+        DELETE FROM paper WHERE paper_id=#{paperID}
+    </delete>
+
+    <update id="updatePaper" parameterType="Paper">
+        UPDATE paper
+        SET paper_NAME = #{paperName},paper_NUM = #{paperNum},paper_detail = #{paperDetail}
+        WHERE  paper_id = #{paperId}
+    </update>
+
+    <select id="queryById" resultType="Paper" parameterType="long">
+        SELECT paper_id,paper_name,paper_num,paper_detail
+        FROM paper
+        WHERE paper_id=#{2}
+    </select>
+<!--    <select id="queryAllPaper" resultMap="paperResultMap">-->
+<!--        SELECT paper_id,paper_name,paper_num,paper_detail-->
+<!--        FROM paper-->
+<!--    </select>-->
+    <select id="queryAllPaper" resultMap="paperResultMap">
+        select paper_id,paper_name,paper_num,paper_detail from   paper
+        <if test="page!=null and count!=null">
+            limit #{page},#{count}
+        </if>
+    </select>
+    <select id="total" resultType="int">
+        select count(*) from paper
+    </select>
+    <!--#{用于使用参数index，索引，从0开始
+    param+数字，param1,param2,param3}
+    select * from t_user where id=#{0}
+<select id="sel" resultType="user" parameterType="map">
+ 如果参数是对象，可以通过#{属性名}来获取
+ 如果参数是map，可以通过#{key}来获取 -->
+</mapper>

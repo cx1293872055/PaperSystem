@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+    <!-- 配置SpringMVC -->
+    <!-- 1.开启SpringMVC注解模式 -->
+    <!-- 简化配置：
+        (1)自动注册DefaultAnootationHandlerMapping,AnotationMethodHandlerAdapter
+        (2)提供一些列：数据绑定，数字和日期的format @NumberFormat, @DateTimeFormat, xml,json默认读写支持
+    -->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean class="com.converter.StringToPaperConverter"/>
+            </list>
+        </property>
+    </bean>
+    <!--添加拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/paper/*"/>
+            <bean class="com.interceptor.PaperInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 2.静态资源默认servlet配置
+        (1)加入对静态资源的处理：js,gif,pngc
+        (2)允许使用"/"做整体映射
+     -->
+    <mvc:default-servlet-handler/>
+    <mvc:resources mapping="/js/**" location="WEB-INF/js/"/>
+    <mvc:resources mapping="/images/**" location="WEB-INF/images/"/>
+    <mvc:resources mapping="/css/**" location="WEB-INF/css/"/>
+    <!-- 3.配置jsp 显示ViewResolver -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!--上传文件使用的配置-->
+<!--使用Spring mvc MultipartFile 方式上传时使用此配置-->
+    <bean name="multipartResolver"
+                     class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="defaultEncoding" value="UTF-8"></property>
+</bean>
+
+<!--使用Servlet Part 方式上传时 使用此方式-->
+<!--    <bean name="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">-->
+<!--    </bean>-->
+
+
+    <!-- 4.扫描web相关的bean -->
+    <context:component-scan base-package="com.controller" />
+</beans>
